@@ -1,0 +1,143 @@
+# ============================================
+# MAVEN / SPRING BOOT
+# ============================================
+**/target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Maven Wrapper
+.mvn/
+mvnw
+mvnw.cmd
+
+# Build outputs
+**/build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# ============================================
+# INTELLIJ IDEA
+# ============================================
+.idea/
+*.iws
+*.iml
+*.ipr
+.idea/modules.xml
+.idea/jarRepositories.xml
+.idea/compiler.xml
+.idea/libraries/
+
+# ============================================
+# ECLIPSE
+# ============================================
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# ============================================
+# NETBEANS
+# ============================================
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# ============================================
+# VS CODE
+# ============================================
+.vscode/
+
+# ============================================
+# ANGULAR / NODE.JS
+# ============================================
+
+# Dependencies
+**/node_modules/
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/lerna-debug.log*
+**/.pnpm-debug.log*
+
+# Lock files (optional - uncomment if you want to ignore)
+**/package-lock.json
+# **/yarn.lock
+
+# Compiled output
+**/dist/
+**/tmp/
+**/out-tsc/
+**/bazel-out/
+
+# Angular cache
+**/.angular/
+**/.sass-cache/
+**/connect.lock
+**/coverage/
+**/libpeerconnection.log
+**/testem.log
+**/typings/
+
+# ============================================
+# SYSTEM FILES
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.trash/
+
+# ============================================
+# LOGS
+# ============================================
+*.log
+*.log.*
+logs/
+
+# ============================================
+# TEMPORARY FILES
+# ============================================
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.cache
+
+# ============================================
+# ENVIRONMENT / SECRETS
+# ============================================
+# Uncomment these if you have sensitive data:
+# .env
+# .env.local
+# .env.*.local
+# application-local.properties
+# application-dev.properties
+
+# ============================================
+# KOTLIN (if applicable)
+# ============================================
+.kotlin
+
+# ============================================
+# DOCKER (optional)
+# ============================================
+# Uncomment if you want to ignore docker overrides
+# docker-compose.override.yml
+
+# ============================================
+# DATABASE (optional)
+# ============================================
+# Uncomment if you have local DB files
+# *.db
+# *.sqlite
+# *.h2.db

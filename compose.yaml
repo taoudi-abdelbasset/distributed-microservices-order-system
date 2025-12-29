@@ -1,0 +1,27 @@
+services:
+  axonserver:
+    image: 'axoniq/axonserver:latest'
+    environment:
+      - 'AXONIQ_AXONSERVER_STANDALONE=TRUE'
+    ports:
+      - '8023:8024'
+      - '8123:8124'
+    networks:
+      - accounts-net
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - "8088:80"
+    environment:
+      PMA_HOST: host.docker.internal
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: ""
+    networks:
+      - accounts-net
+
+networks:
+  accounts-net:
+    driver: bridge
