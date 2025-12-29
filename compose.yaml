@@ -4,8 +4,22 @@ services:
     environment:
       - 'AXONIQ_AXONSERVER_STANDALONE=TRUE'
     ports:
-      - '8023:8024'
-      - '8123:8124'
+      - '8024:8024'
+      - '8124:8124'
+    networks:
+      - accounts-net
+
+  mysql:
+    image: 'mysql:latest'
+    environment:
+      - 'MYSQL_DATABASE=accounts_db'
+      - 'MYSQL_ROOT_PASSWORD=1234'
+      - 'MYSQL_USER=admin'
+      - 'MYSQL_PASSWORD=1234'
+    volumes:
+      - accounts_data:/var/lib/mysql
+    ports:
+      - '3306:3306'
     networks:
       - accounts-net
 
@@ -15,12 +29,17 @@ services:
     ports:
       - "8088:80"
     environment:
-      PMA_HOST: host.docker.internal
+      PMA_HOST: mysql
       PMA_PORT: 3306
       PMA_USER: root
-      PMA_PASSWORD: ""
+      PMA_PASSWORD: 1234
     networks:
       - accounts-net
+    depends_on:
+      - mysql
+
+volumes:
+  accounts_data:
 
 networks:
   accounts-net:
