@@ -1,4 +1,4 @@
-package com.example.inventory_service_cmd.enums;
+package com.example.inventory_service_query.enums;
 
 public enum ProductState {
     AVAILABLE,

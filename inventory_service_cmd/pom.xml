@@ -20,6 +20,11 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.example</groupId>
+			<artifactId>inventory_comman_api</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 		<!-- Axon Framework -->
 		<dependency>
 			<groupId>org.axonframework</groupId>

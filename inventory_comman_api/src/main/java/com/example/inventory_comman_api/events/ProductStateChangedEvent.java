@@ -1,5 +1,5 @@
-package com.example.inventory_service_cmd.events;
-import com.example.inventory_service_cmd.enums.ProductState;
+package com.example.inventory_comman_api.events;
+import com.example.inventory_comman_api.enums.ProductState;
 import lombok.Getter;
 
 @Getter

@@ -1,4 +1,4 @@
-package com.example.inventory_service_cmd.events;
+package com.example.inventory_service_query.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

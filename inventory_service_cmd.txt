@@ -1,0 +1,41 @@
+inventory_service_cmd
+├── commands
+│   ├── aggregates
+│   │   ├── CategoryAggregate.java
+│   │   └── ProductAggregate.java
+│   ├── commands
+│   │   ├── BaseCommand.java
+│   │   ├── CreateCategoryCommand.java
+│   │   ├── CreateProductCommand.java
+│   │   ├── DeleteCategoryCommand.java
+│   │   ├── DeleteProductCommand.java
+│   │   ├── UpdateCategoryCommand.java
+│   │   ├── UpdateProductCommand.java
+│   │   ├── UpdateProductPriceCommand.java
+│   │   ├── UpdateProductQuantityCommand.java
+│   │   └── UpdateProductStateCommand.java
+│   ├── controllers
+│   │   ├── CategoryCommandCtrl.java
+│   │   └── ProductCommandCtrl.java
+│   └── dtos
+│       ├── CreateCategoryRequestDTO.java
+│       ├── CreateProductRequestDTO.java
+│       ├── UpdateCategoryRequestDTO.java
+│       ├── UpdateProductPriceRequestDTO.java
+│       ├── UpdateProductQuantityRequestDTO.java
+│       ├── UpdateProductRequestDTO.java
+│       └── UpdateProductStateRequestDTO.java
+├── enums
+│   └── ProductState.java
+├── events
+│   ├── BaseEvent.java
+│   ├── CategoryCreatedEvent.java
+│   ├── CategoryDeletedEvent.java
+│   ├── CategoryUpdatedEvent.java
+│   ├── ProductCreatedEvent.java
+│   ├── ProductDeletedEvent.java
+│   ├── ProductPriceUpdatedEvent.java
+│   ├── ProductQuantityUpdatedEvent.java
+│   ├── ProductStateChangedEvent.java
+│   └── ProductUpdatedEvent.java
+└── InventoryServiceCmdApplication.java

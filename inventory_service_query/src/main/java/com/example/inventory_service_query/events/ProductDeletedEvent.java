@@ -1,5 +1,5 @@
-package com.example.inventory_service_cmd.events;
-import com.example.inventory_service_cmd.enums.ProductState;
+package com.example.inventory_service_query.events;
+import com.example.inventory_service_query.enums.ProductState;
 import lombok.Getter;
 @Getter
 public class ProductDeletedEvent extends BaseEvent<String> {

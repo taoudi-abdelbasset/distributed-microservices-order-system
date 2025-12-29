@@ -1,4 +1,4 @@
-package com.example.inventory_service_cmd.events;
+package com.example.inventory_service_query.events;
 import lombok.Getter;
 @Getter
 public class CategoryUpdatedEvent extends BaseEvent<String> {
