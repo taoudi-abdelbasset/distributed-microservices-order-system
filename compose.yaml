@@ -1,30 +1,50 @@
+version: '3.8'
+
 services:
+  # ==================== INFRASTRUCTURE ====================
+  
+  # Axon Server - Event Store et Message Broker
   axonserver:
     image: 'axoniq/axonserver:latest'
+    container_name: axonserver
     environment:
       - 'AXONIQ_AXONSERVER_STANDALONE=TRUE'
     ports:
-      - '8024:8024'
-      - '8124:8124'
+      - '8024:8024'  # HTTP
+      - '8124:8124'  # gRPC
     networks:
-      - accounts-net
+      - microservices-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8024/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
+  # MySQL Database
   mysql:
-    image: 'mysql:latest'
+    image: 'mysql:8.0'
+    container_name: mysql-db
     environment:
-      - 'MYSQL_DATABASE=accounts_db'
       - 'MYSQL_ROOT_PASSWORD=1234'
       - 'MYSQL_USER=admin'
       - 'MYSQL_PASSWORD=1234'
     volumes:
-      - accounts_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     ports:
       - '3306:3306'
     networks:
-      - accounts-net
+      - microservices-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p1234"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
+  # phpMyAdmin - Interface d'administration MySQL
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
     restart: always
     ports:
       - "8088:80"
@@ -34,13 +54,168 @@ services:
       PMA_USER: root
       PMA_PASSWORD: 1234
     networks:
-      - accounts-net
+      - microservices-net
     depends_on:
       - mysql
 
-volumes:
-  accounts_data:
+  # ==================== SPRING CLOUD SERVICES ====================
 
+  # Config Service - Configuration centralisée
+  config-service:
+    image: 'inventory-config-service:latest'
+    container_name: config-service
+    ports:
+      - '8888:8888'
+    networks:
+      - microservices-net
+    environment:
+      - 'SPRING_PROFILES_ACTIVE=native'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Discovery Service - Eureka Server
+  discovery-service:
+    image: 'inventory-discovery-service:latest'
+    container_name: discovery-service
+    ports:
+      - '8761:8761'
+    networks:
+      - microservices-net
+    environment:
+      - 'SPRING_PROFILES_ACTIVE=docker'
+    depends_on:
+      config-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Gateway Service - API Gateway
+  gateway-service:
+    image: 'inventory-gateway-service:latest'
+    container_name: gateway-service
+    ports:
+      - '8080:8080'
+    networks:
+      - microservices-net
+    environment:
+      - 'SPRING_PROFILES_ACTIVE=docker'
+      - 'EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka'
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+
+  # ==================== INVENTORY SERVICES ====================
+
+  # Inventory Command Service
+  inventory-service-cmd:
+    image: 'inventory-service-cmd:latest'
+    container_name: inventory-service-cmd
+    ports:
+      - '8071:8071'
+    networks:
+      - microservices-net
+    environment:
+      - 'SPRING_PROFILES_ACTIVE=docker'
+      - 'DB_URL=jdbc:mysql://mysql:3306/inventory_cmd_db'
+      - 'DB_USER=admin'
+      - 'DB_PASSWORD=1234'
+      - 'AXON_SERVER=axonserver:8124'
+      - 'EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka'
+    depends_on:
+      mysql:
+        condition: service_healthy
+      axonserver:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+
+  # Inventory Query Service
+  inventory-service-query:
+    image: 'inventory-service-query:latest'
+    container_name: inventory-service-query
+    ports:
+      - '8072:8072'
+    networks:
+      - microservices-net
+    environment:
+      - 'SPRING_PROFILES_ACTIVE=docker'
+      - 'DB_URL=jdbc:mysql://mysql:3306/inventory_query_db'
+      - 'DB_USER=admin'
+      - 'DB_PASSWORD=1234'
+      - 'AXON_SERVER=axonserver:8124'
+      - 'EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka'
+    depends_on:
+      mysql:
+        condition: service_healthy
+      axonserver:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+      inventory-service-cmd:
+        condition: service_started
+
+  # ==================== ORDER SERVICES ====================
+
+  # Order Command Service
+  order-service-cmd:
+    image: 'order-service-cmd:latest'
+    container_name: order-service-cmd
+    ports:
+      - '8073:8073'
+    networks:
+      - microservices-net
+    environment:
+      - 'SPRING_PROFILES_ACTIVE=docker'
+      - 'DB_URL=jdbc:mysql://mysql:3306/order_cmd_db'
+      - 'DB_USER=admin'
+      - 'DB_PASSWORD=1234'
+      - 'AXON_SERVER=axonserver:8124'
+      - 'EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka'
+    depends_on:
+      mysql:
+        condition: service_healthy
+      axonserver:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+
+  # Order Query Service
+  order-service-query:
+    image: 'order-service-query:latest'
+    container_name: order-service-query
+    ports:
+      - '8074:8074'
+    networks:
+      - microservices-net
+    environment:
+      - 'SPRING_PROFILES_ACTIVE=docker'
+      - 'DB_URL=jdbc:mysql://mysql:3306/order_query_db'
+      - 'DB_USER=admin'
+      - 'DB_PASSWORD=1234'
+      - 'AXON_SERVER=axonserver:8124'
+      - 'EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka'
+    depends_on:
+      mysql:
+        condition: service_healthy
+      axonserver:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+      order-service-cmd:
+        condition: service_started
+
+# ==================== VOLUMES ====================
+volumes:
+  mysql_data:
+    driver: local
+
+# ==================== NETWORKS ====================
 networks:
-  accounts-net:
+  microservices-net:
     driver: bridge
